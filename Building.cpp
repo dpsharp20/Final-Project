@@ -23,10 +23,17 @@ void Building::update(Move move){
 }
 
 int Building::tick(Move move){
-    //TODO: Implement tick
-
-    //returning 0 to prevent compilation error
-    return 0;
+    time++;
+    update(move);
+    
+    for(int i = 0; i < NUM_ELEVATORS; i++){
+        elevators[i].tick(time);
+    }
+    int exploded = 0;
+    for(int i = 0; i < NUM_FLOORS; i++) {
+        exploded = exploded + floors[i].tick(time);
+    }
+    return exploded;
 }
 
 //////////////////////////////////////////////////////
