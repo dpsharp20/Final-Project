@@ -19,7 +19,6 @@
 using namespace std;
 
 Move::Move(string commandString) : Move() {
-    char character;
     if (commandString == "") {
         isPass = true;
         isPickup = false;
@@ -38,17 +37,15 @@ Move::Move(string commandString) : Move() {
         isSave = false;
         isQuit = true;
     }
-    else if (commandString == "e") {
+    else {
         stringstream ss(commandString);
-        ss >> character >> elevatorId >> character;
-        if (character == 'f') {
-            isPass = false;
-            isPickup = false;
-            isSave = false;
-            isQuit = false;
+        char temp1;
+        char temp2;
+        ss >> temp1 >> elevatorId >> temp2;
+        if (temp2 == 'f') {
             ss >> targetFloor;
         }
-        else if (character == 'p') {
+        else if (temp2 == 'p') {
             isPass = false;
             isPickup = true;
             isSave = false;
@@ -59,21 +56,25 @@ Move::Move(string commandString) : Move() {
 
 bool Move::isValidMove(Elevator elevators[NUM_ELEVATORS]) const {
     
+    // if move is valid
     if (isPass == true || isQuit == true || isSave == true) {
         return true;
     }
-    else if (elevatorId >= 0 && elevatorId < NUM_ELEVATORS &&
-             !elevators[elevatorId].isServicing()) {
-        if (isPickup == true) {
-            return true;
+    // if move is invalid
+    else if (isPass == false || isQuit == false || isSave == false) {
+        return false;
+    }
+    // if elevator is not currently servicing a request
+    else if ((elevatorId >= 0) && (elevatorId < NUM_ELEVATORS) && (!elevators[elevatorId].isServicing())) {
+            if (isPickup == true) {
+                return true;
+            }
         }
-    }
-    else if (targetFloor >= 0 && targetFloor < NUM_FLOORS) {
-        return true;
-    }
-
+        // for service moves
+        else if ((targetFloor >= 0) && (targetFloor < NUM_FLOORS) && (targetFloor != elevators[elevatorId].getCurrentFloor())) {
+                return true;
+        }
     return false;
-
 }
 
 void Move::setPeopleToPickup(const string& pickupList, const int currentFloor, const Floor& pickupFloor) {
