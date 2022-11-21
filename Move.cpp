@@ -60,20 +60,22 @@ bool Move::isValidMove(Elevator elevators[NUM_ELEVATORS]) const {
     if (isPass == true || isQuit == true || isSave == true) {
         return true;
     }
-    // if move is invalid
+    // if move is a pickup or service move
     else if (isPass == false || isQuit == false || isSave == false) {
-        return false;
-    }
-    // if elevator is not currently servicing a request
-    else if ((elevatorId >= 0) && (elevatorId < NUM_ELEVATORS) && (!elevators[elevatorId].isServicing())) {
+        // checking to see if elevator is in service
+        // for both pickup and service moves
+        if ((elevatorId >= 0) && (elevatorId < NUM_ELEVATORS) && (!elevators[elevatorId].isServicing())) {
             if (isPickup == true) {
                 return true;
             }
+            // for service moves only
+            if (isPickup == false) {
+                if ((targetFloor >= 0) && (targetFloor < NUM_FLOORS) && (targetFloor != elevators[elevatorId].getCurrentFloor())) {
+                    return true;
+                }
+            }
         }
-        // for service moves
-        else if ((targetFloor >= 0) && (targetFloor < NUM_FLOORS) && (targetFloor != elevators[elevatorId].getCurrentFloor())) {
-                return true;
-        }
+    }
     return false;
 }
 
