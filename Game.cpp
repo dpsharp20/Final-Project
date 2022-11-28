@@ -20,22 +20,21 @@ using namespace std;
 // Stub for playGame for Core, which plays random games
 // You *must* revise this function according to the RME and spec
 void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
-    std::mt19937 gen(1);
-    std::uniform_int_distribution<> floorDist(0, 9);
-    std::uniform_int_distribution<> angerDist(0, 3);
 
     if(!gameFile.is_open()) {
            exit(1);
        }
+    else {
+        isAIMode = isAIModeIn; //good
+        printGameStartPrompt();
+        initGame(gameFile);
+    }
     
-    isAIMode = isAIModeIn; //good
-    printGameStartPrompt();
-    initGame(gameFile);
-
     string fileLines;
-    while(gameFile >> fileLines) {
+    getline(gameFile, fileLines);
+    while(getline(gameFile, fileLines)) {
         Person p1(fileLines);
-        while (building.getTime() <= p1.getTurn()) {
+        while (building.getTime() < p1.getTurn()) {
             building.prettyPrintBuilding(cout);
             satisfactionIndex.printSatisfaction(cout, false);
             checkForGameEnd();
@@ -61,14 +60,14 @@ bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum)
     // ensuring there are no duplicates present in pickupList
     for (int i = 0; i < pickupList.size() - 1; i++) {
         for (int j = i + 1; j < pickupList.size(); j++) {
-            if (pickupList.at(i) == pickupList.at(j)) {
+            if (pickupList[i] == pickupList[j]) {
                 return false;
             }
         }
     }
     // ensuring there is non-negative digits
     for (int i = 0; i < pickupList.size(); i++) {
-        if (pickupList.at(i) < 0) {
+        if (pickupList[i] - 48 < 0) {
             return false;
         }
     }
@@ -78,10 +77,10 @@ bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum)
     }
     
     // The maximum value pointed to by an index of pickupList must be strictly less than the number of people on the floor pointed to by pickupFloorNum
-    int maximum = 0;
+    int maximum = pickupList[0] - 48;
     for(int i = 0; i < pickupList.size(); i++) {
-        if(pickupList.at(i) > maximum) {
-            maximum = pickupList.at(i);
+        if(pickupList[i] - 48 > maximum) {
+            maximum = pickupList[0] - 48;
         }
         if(maximum > building.getFloorByFloorNum(pickupFloorNum).getNumPeople()) {
                return false;
@@ -89,16 +88,21 @@ bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum)
     }
     
     // Each person represented by an index in pickupList must be going in the same direction relative to pickupFloorNum
-    bool sameDirection = false;
-    bool direction = false;
-    for (int i = 0; i < pickupList.size(); i++) {
-        if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(i).getTargetFloor() > pickupFloorNum) {
-            sameDirection = true;
+        if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList[0] - 48).getTargetFloor() > pickupFloorNum) {
+            for (int i = 1; i < pickupList.size(); i++) {
+                if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList[i] - 48).getTargetFloor() < pickupFloorNum) {
+                    return false;
+                }
+            }
         }
-        if (direction != sameDirection) {
-            return false;
+        else {
+            for (int i = 1; i < pickupList.size(); i++) {
+                if (building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(pickupList[i] - 48).getTargetFloor() > pickupFloorNum) {
+                    return false;
+                }
+            }
         }
-    }
+            
     return true;
 }
 
