@@ -58,7 +58,7 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
 bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum) const {
     
     // ensuring there are no duplicates present in pickupList
-    for (int i = 0; i < pickupList.size() - 1; i++) {
+    for (int i = 0; i < pickupList.size(); i++) {
         for (int j = i + 1; j < pickupList.size(); j++) {
             if (pickupList[i] == pickupList[j]) {
                 return false;
@@ -80,9 +80,9 @@ bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum)
     int maximum = pickupList[0] - 48;
     for(int i = 0; i < pickupList.size(); i++) {
         if(pickupList[i] - 48 > maximum) {
-            maximum = pickupList[0] - 48;
+            maximum = pickupList[i] - 48;
         }
-        if(maximum > building.getFloorByFloorNum(pickupFloorNum).getNumPeople()) {
+        if(maximum >= building.getFloorByFloorNum(pickupFloorNum).getNumPeople()) {
                return false;
            }
     }
