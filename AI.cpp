@@ -42,18 +42,20 @@ string getAIMoveString(const BuildingState& buildingState) {
     }
     
     //Check if a non-serviving elevator is at its target floor. If it is, and there are people on that floor, return a pickup -- return "eip"
-    
+    string elevatorIndex = "";
     for (int i = 0; i < NUM_ELEVATORS; ++i) {
         _Elevator elevator = buildingState.elevators[i];
         
         for (int j = 0; j < NUM_FLOORS; j++) {
         _Floor floor = buildingState.floors[j];
             if (!elevator.isServicing && elevator.currentFloor == elevator.targetFloor && floor.numPeople > 0) {
-                return "eip";
+                elevatorIndex = to_string(i);
+                return "e" + elevatorIndex + "p";
             }
         }
     }
     // If there are no serviving elevators going to the floor with the angriest person, return a servicing move to go to that floor. -- return "eifj"
+    string floorIndex = "";
     for (int i = 0; i < NUM_ELEVATORS; ++i) {
         _Elevator elevator = buildingState.elevators[i];
         
@@ -62,7 +64,8 @@ string getAIMoveString(const BuildingState& buildingState) {
             
             if (!elevator.isServicing && elevator.targetFloor != maxAngerFloor) {
                 elevator.targetFloor = maxAngerFloor;
-                return "eifj";
+                floorIndex = to_string(j);
+                return "e" + elevatorIndex + "f" + floorIndex;
             }
             // If an elevator is already going to the floor with the angriest person, return a pass
             else if (!elevator.isServicing && elevator.targetFloor == maxAngerFloor) {
@@ -92,23 +95,29 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                     maxAnger = patron.angerLevel;
                     maxAngerFloor = i;
                     
+                    // If they want to go up, var goUp = true;
                     if (maxAnger && floor.hasUpRequest) {
                         bool goUp = true;
                         
                     }
+                    // if down, goUp = false;
+                    else if (maxAnger && floor.hasDownRequest) {
+                        bool goUp = false;
+                    }
+                }
+                // For each person on the floor who wants to go in that direction, check to see if their target floor is full. If not -- add to pickup list
+                _Elevator elevator = buildingState.elevators[i];
+                if (elevator.targetFloor != MAX_PEOPLE_PER_FLOOR) {
+                    
                 }
             }
         }
     }
     
-  
-    
-    // If they want to go up, var goUp = true; if down, goUp = false;
-    
     // If the floor only has people going up, goUp = true (if down, goUp = false;)
     // Determines the direction the elevator will travel in
     
-    // FOr each person on the floor who wants to go in that direction, check to see if their target floor is full. If not -- add to pickup list
+ 
     
     //finally, return string representing pickuplist
     
