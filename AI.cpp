@@ -4,8 +4,8 @@
  * AI.cpp
  * Project UID 28eb18c2c1ce490aada441e65559efdd
  *
- * <#Names#>
- * <#Uniqnames#>
+ * Kaitlyn Strukel, 
+ * kstrukel, 
  *
  * Final Project - Elevators
  */
@@ -41,23 +41,12 @@ string getAIMoveString(const BuildingState& buildingState) {
         }
     }
     
-    //Check if a non-serviving elevator is at its target floor. If it is, and there are people on that floor, return a pickup -- return "eip"
+    // If there are no serviving elevators going to the floor with the angriest person, return a servicing move to go to that floor. -- return "eifj"
+    string floorIndex = "";
     string elevatorIndex = "";
     for (int i = 0; i < NUM_ELEVATORS; ++i) {
         _Elevator elevator = buildingState.elevators[i];
-        
-        for (int j = 0; j < NUM_FLOORS; j++) {
-        _Floor floor = buildingState.floors[j];
-            if (!elevator.isServicing && elevator.currentFloor == elevator.targetFloor && floor.numPeople > 0) {
-                elevatorIndex = to_string(i);
-                return "e" + elevatorIndex + "p";
-            }
-        }
-    }
-    // If there are no serviving elevators going to the floor with the angriest person, return a servicing move to go to that floor. -- return "eifj"
-    string floorIndex = "";
-    for (int i = 0; i < NUM_ELEVATORS; ++i) {
-        _Elevator elevator = buildingState.elevators[i];
+        elevatorIndex = to_string(i);
         
         for (int j = 0; j < NUM_FLOORS; j++) {
             _Floor floor = buildingState.floors[j];
@@ -74,6 +63,19 @@ string getAIMoveString(const BuildingState& buildingState) {
         }
     }
 
+    //Check if a non-serviving elevator is at its target floor. If it is, and there are people on that floor, return a pickup -- return "eip"
+    for (int i = 0; i < NUM_ELEVATORS; ++i) {
+        _Elevator elevator = buildingState.elevators[i];
+        
+        for (int j = 0; j < NUM_FLOORS; j++) {
+        _Floor floor = buildingState.floors[j];
+            if (!elevator.isServicing && elevator.currentFloor == elevator.targetFloor && floor.numPeople > 0) {
+                elevatorIndex = to_string(i);
+                return "e" + elevatorIndex + "p";
+            }
+        }
+    }
+    
     return "";
 }
 
@@ -82,7 +84,9 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
    
     int maxAnger = 0;
     int maxAngerFloor = 0;
-    bool goUp = false;
+    bool goUp;
+    string pickupList = "";
+    string str = "";
     // Check if the floor to pick up has both up and down requests
     for (int i = 0; i < NUM_FLOORS; ++i) {
       _Floor floor = buildingState.floors[i];
@@ -95,21 +99,18 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
                     maxAnger = patron.angerLevel;
                     maxAngerFloor = i;
                     
+                    
                     // If they want to go up, var goUp = true;
                     if (maxAnger && floor.hasUpRequest) {
-                        bool goUp = true;
+                         goUp = true;
                         
                     }
                     // if down, goUp = false;
                     else if (maxAnger && floor.hasDownRequest) {
-                        bool goUp = false;
+                        goUp = false;
                     }
                 }
-                // For each person on the floor who wants to go in that direction, check to see if their target floor is full. If not -- add to pickup list
-                _Elevator elevator = buildingState.elevators[i];
-                if (elevator.targetFloor != MAX_PEOPLE_PER_FLOOR) {
-                    
-                }
+                
             }
         }
     }
