@@ -4,8 +4,8 @@
  * AI.cpp
  * Project UID 28eb18c2c1ce490aada441e65559efdd
  *
- * <#Names#>
- * <#Uniqnames#>
+ * Kaitlyn Strukel,
+ * kstrukel
  *
  * Final Project - Elevators
  */
@@ -46,7 +46,7 @@ string getAIMoveString(const BuildingState& buildingState) {
     string elevatorIndex = "";
     for (int i = 0; i < NUM_ELEVATORS; ++i) {
         _Elevator elevator = buildingState.elevators[i];
-        elevatorIndex = to_string(i);
+        elevatorIndex = to_string(elevator.elevatorId);
         
         for (int j = 0; j < NUM_FLOORS; j++) {
             _Floor floor = buildingState.floors[j];
@@ -71,7 +71,9 @@ string getAIMoveString(const BuildingState& buildingState) {
         for (int j = 0; j < NUM_FLOORS; j++) {
         _Floor floor = buildingState.floors[j];
             if (!elevator.isServicing && elevator.currentFloor == elevator.targetFloor && floor.numPeople > 0) {
-                elevatorIndex = to_string(i);
+    
+                elevatorIndex = to_string(elevator.elevatorId);
+                
                 return "e" + elevatorIndex + "p";
             }
         }
@@ -88,40 +90,35 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
     bool goUp;
     string pickupList = "";
     string str = "";
-    // Check if the floor to pick up has both up and down requests
+    
     for (int i = 0; i < NUM_FLOORS; ++i) {
       _Floor floor = buildingState.floors[i];
-        if (floor.hasUpRequest == true && floor.hasDownRequest == true) {
-            
-            // Find the angriest person on that floor
+        
+            // Find the angriest person on that floor & add them to pickup list
             for (int j = 0; j < floor.numPeople; ++j) {
                 _Person patron = floor.people[j];
                 if (patron.angerLevel > maxAnger) {
                     maxAnger = patron.angerLevel;
                     maxAngerFloor = i;
+                    pickupList += maxAnger;
                     
                     
                     // If they want to go up, var goUp = true;
                     if (maxAnger && floor.hasUpRequest) {
                          goUp = true;
-                        
+            
                     }
                     // if down, goUp = false;
                     else if (maxAnger && floor.hasDownRequest) {
                         goUp = false;
                     }
                 }
-                
+                // If the floor only has people going up, goUp = true (if down, goUp = false;)
+                // Determines the direction the elevator will travel in
             }
         }
-    }
-    
-    // If the floor only has people going up, goUp = true (if down, goUp = false;)
-    // Determines the direction the elevator will travel in
-    
- 
-    
+
     //finally, return string representing pickuplist
     
-    return "";
+    return pickupList;
 }
