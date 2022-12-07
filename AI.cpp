@@ -4,8 +4,8 @@
  * AI.cpp
  * Project UID 28eb18c2c1ce490aada441e65559efdd
  *
- * Kaitlyn Strukel, 
- * kstrukel, 
+ * <#Names#>
+ * <#Uniqnames#>
  *
  * Final Project - Elevators
  */
@@ -53,7 +53,8 @@ string getAIMoveString(const BuildingState& buildingState) {
             
             if (!elevator.isServicing && elevator.targetFloor != maxAngerFloor) {
                 elevator.targetFloor = maxAngerFloor;
-                floorIndex = to_string(j);
+                floor.floorNum = maxAngerFloor;
+                floorIndex = to_string(maxAngerFloor);
                 return "e" + elevatorIndex + "f" + floorIndex;
             }
             // If an elevator is already going to the floor with the angriest person, return a pass
