@@ -98,44 +98,38 @@ string getAIMoveString(const BuildingState& buildingState) {
 
 string getAIPickupList(const Move& move, const BuildingState& buildingState, 
                        const Floor& floorToPickup) {
-   
-    int maxAnger = 0;
-    int maxAngerFloor = 0;
-    bool goUp;
-    string pickupList = "";
-    string str = "";
     
-    for (int i = 0; i < NUM_FLOORS; ++i) {
-      _Floor floor = buildingState.floors[i];
+    string finalString;
+    string str = "";
+    int currentFloor = 0;
+    int targetFloor = 0;
         
-            // Find the angriest person on that floor & add them to pickup list
-            for (int j = 0; j < floor.numPeople; ++j) {
-                _Person patron = floor.people[j];
-                if (patron.angerLevel > maxAnger) {
-                    maxAnger = patron.angerLevel;
-                    maxAngerFloor = i;
-                    pickupList += maxAnger;
-                    
-                    
-                    // If they want to go up, var goUp = true;
-                    if (maxAnger && floor.hasUpRequest) {
-                         goUp = true;
-            
-                    }
-                    // if down, goUp = false;
-                    else if (maxAnger && floor.hasDownRequest) {
-                        goUp = false;
-                    }
-                }
-                // If the floor only has people going up, goUp = true (if down, goUp = false;)
-                // Determines the direction the elevator will travel in
+    if(floorToPickup.getHasDownRequest()) {
+        for(int i = 0; i < floorToPickup.getNumPeople(); i++) {
+            currentFloor = floorToPickup.getPersonByIndex(i).getCurrentFloor();
+            targetFloor = floorToPickup.getPersonByIndex(i).getTargetFloor();
+            if (targetFloor < currentFloor) {
+                finalString += to_string(i);
             }
         }
+        return finalString;
+    }
+        
+    if(floorToPickup.getHasUpRequest()) {
+        for(int i = 0; i < floorToPickup.getNumPeople(); i++) {
+           currentFloor = floorToPickup.getPersonByIndex(i).getCurrentFloor();
+           targetFloor = floorToPickup.getPersonByIndex(i).getTargetFloor();
+            if (targetFloor > currentFloor) {
+                finalString += to_string(i);
+            }
+        }
+        return finalString;
+    }
 
-    //finally, return string representing pickuplist
-    
-    return pickupList;
+        
+    return finalString;
 }
+
 
 
 
