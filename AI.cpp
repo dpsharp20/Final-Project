@@ -135,3 +135,51 @@ string getAIPickupList(const Move& move, const BuildingState& buildingState,
     
     return pickupList;
 }
+
+
+
+
+// My idea for pickup (not 100%)
+string getAIPickupList(const Move& move, const BuildingState& buildingState, 
+                       const Floor& floorToPickup) {
+    string finalString;
+    
+    if(floorToPickup.getHasDownRequest()) {
+        for(int i = 0; i < floorToPickup.getNumPeople(); i++) {
+            if(finalString.length() < ELEVATOR_CAPACITY) {
+                if((floorToPickup.getPersonByIndex(i).getTargetFloor() < buildingState.elevators[move.getElevatorId()].currentFloor)){
+                    if(floorToPickup.getPersonByIndex(i).getTargetFloor() < floorToPickup.getPersonByIndex(i).getCurrentFloor()){
+                        finalString.append(to_string(i));
+                    }
+                }
+            }
+        }
+        return finalString;
+    }
+    
+    
+    
+    if(floorToPickup.getHasUpRequest()) {
+        for(int i = 0; i < floorToPickup.getNumPeople(); i++) {
+            if(finalString.length() < ELEVATOR_CAPACITY) {
+                if((floorToPickup.getPersonByIndex(i).getTargetFloor() > buildingState.elevators[move.getElevatorId()].currentFloor)){
+                    if(floorToPickup.getPersonByIndex(i).getTargetFloor() > floorToPickup.getPersonByIndex(i).getCurrentFloor()) {
+                        finalString.append(to_string(i));
+                    }
+                    
+                }
+            }
+            
+        }
+        return finalString;
+    }
+    
+    return finalString;
+}
+
+
+
+
+
+
+
