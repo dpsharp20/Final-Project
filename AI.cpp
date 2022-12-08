@@ -16,6 +16,26 @@
 
 // This file is used only in the Reach, not the Core.
 // You do not need to make any changes to this file for the Core
+bool upOrDown(_Elevator currentFloor, _Elevator targetFloor,
+              const BuildingState& buildingState) {
+    bool goingUp = false;
+    for (int i = 0; i < NUM_ELEVATORS; ++i) {
+        _Elevator elevator = buildingState.elevators[i];
+        int floorDifference;
+        floorDifference = elevator.targetFloor - elevator.currentFloor;
+        if (floorDifference < 0) { //could be an error if target floor equals current floor
+            goingUp = true;
+        }
+        else if (floorDifference > 0) {
+            goingUp = false;
+        }
+        else {
+            EXIT_FAILURE;
+        }
+    }
+    return goingUp;
+}
+
 
 string getAIMoveString(const BuildingState& buildingState) {
   // find floor with angriest person
