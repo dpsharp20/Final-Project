@@ -78,27 +78,20 @@ string getAIMoveString(const BuildingState& buildingState) {
                 return "e" + elevatorIndex + "f" + floorIndex;
             }
             // If an elevator is already going to the floor with the angriest person, return a pass
-            else if (!elevator.isServicing && elevator.targetFloor == maxAngerFloor) {
+            else if (elevator.isServicing && elevator.targetFloor == maxAngerFloor) {
                 return "";
             }
-        }
-    }
-
-    //Check if a non-serviving elevator is at its target floor. If it is, and there are people on that floor, return a pickup -- return "eip"
-    for (int i = 0; i < NUM_ELEVATORS; ++i) {
-        _Elevator elevator = buildingState.elevators[i];
-        
-        for (int j = 0; j < NUM_FLOORS; j++) {
-        _Floor floor = buildingState.floors[j];
-            if (!elevator.isServicing && elevator.currentFloor == elevator.targetFloor && floor.numPeople > 0) {
-    
-                elevatorIndex = to_string(elevator.elevatorId);
+            //Check if a non-serviving elevator is at its target floor. If it is, and there are people on that floor, return a pickup -- return "eip"
+            
+            else if (!elevator.isServicing && elevator.currentFloor == elevator.targetFloor && floor.numPeople > 0) {
                 
+                elevatorIndex = to_string(elevator.elevatorId);
                 return "e" + elevatorIndex + "p";
             }
         }
     }
-    
+
+
     return "";
 }
 
